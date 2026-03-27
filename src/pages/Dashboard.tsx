@@ -1,19 +1,19 @@
 import { useMemo } from 'react';
 import { useApp } from '@/context/AppContext';
 import { BarChart3, TrendingUp, TrendingDown, DollarSign, Target, Flame, Award, AlertTriangle, Percent } from 'lucide-react';
-import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
-import { MARKET_SESSIONS, EMOTIONS } from '@/lib/types';
+import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
+import { MARKET_SESSIONS } from '@/lib/types';
 import { format } from 'date-fns';
 
 function KPICard({ label, value, icon: Icon, color = 'text-foreground', sub }: { label: string; value: string | number; icon: any; color?: string; sub?: string }) {
   return (
-    <div className="glass-card rounded-xl p-4 flex flex-col gap-1">
-      <div className="flex items-center gap-2 text-muted-foreground">
-        <Icon size={14} />
-        <span className="text-xs font-medium uppercase tracking-wider">{label}</span>
+    <div className="bg-card rounded-xl p-4 border border-border hover:border-primary/20 transition-colors">
+      <div className="flex items-center gap-2 text-muted-foreground mb-2">
+        <Icon size={13} className="opacity-60" />
+        <span className="text-[11px] font-medium tracking-wide">{label}</span>
       </div>
-      <p className={`text-xl font-bold ${color} font-mono`}>{value}</p>
-      {sub && <p className="text-[10px] text-muted-foreground">{sub}</p>}
+      <p className={`text-lg font-semibold ${color} font-mono`}>{value}</p>
+      {sub && <p className="text-[10px] text-muted-foreground mt-1">{sub}</p>}
     </div>
   );
 }
@@ -33,17 +33,10 @@ export default function Dashboard() {
     const avgRR = trades.reduce((s, t) => s + t.rr, 0) / trades.length;
     const profitFactor = Math.abs(avgLoss) > 0 ? (wins.reduce((s, t) => s + t.pnl, 0)) / Math.abs(losses.reduce((s, t) => s + t.pnl, 0)) : 0;
 
-    // Drawdown
     let peak = 0, maxDD = 0, running = 0;
     const sorted = [...trades].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-    for (const t of sorted) {
-      running += t.pnl;
-      if (running > peak) peak = running;
-      const dd = peak - running;
-      if (dd > maxDD) maxDD = dd;
-    }
+    for (const t of sorted) { running += t.pnl; if (running > peak) peak = running; const dd = peak - running; if (dd > maxDD) maxDD = dd; }
 
-    // By day
     const byDay: Record<string, number> = {};
     trades.forEach(t => { const d = format(new Date(t.date), 'yyyy-MM-dd'); byDay[d] = (byDay[d] || 0) + t.pnl; });
     const days = Object.entries(byDay);
@@ -53,16 +46,13 @@ export default function Dashboard() {
     const largestWin = wins.length ? Math.max(...wins.map(t => t.pnl)) : 0;
     const largestLoss = losses.length ? Math.min(...losses.map(t => t.pnl)) : 0;
 
-    // Equity curve
     let eq = 0;
     const equityCurve = sorted.map(t => { eq += t.pnl; return { date: format(new Date(t.date), 'MM/dd'), equity: +eq.toFixed(2) }; });
 
-    // Today
     const today = format(new Date(), 'yyyy-MM-dd');
     const todayTrades = trades.filter(t => format(new Date(t.date), 'yyyy-MM-dd') === today);
     const todayPnl = todayTrades.reduce((s, t) => s + t.pnl, 0);
 
-    // Streak
     const sortedDesc = [...trades].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
     let streak = 0, sType: 'win' | 'loss' | null = null;
     for (const t of sortedDesc) {
@@ -72,19 +62,17 @@ export default function Dashboard() {
       else break;
     }
 
-    return {
-      total: trades.length, winRate, totalPnl, avgRR, profitFactor, maxDD, avgWin, avgLoss,
-      largestWin, largestLoss, totalComm, bestDay, worstDay, equityCurve,
-      todayTrades: todayTrades.length, todayPnl, streak, streakType: sType,
-    };
+    return { total: trades.length, winRate, totalPnl, avgRR, profitFactor, maxDD, avgWin, avgLoss, largestWin, largestLoss, totalComm, bestDay, worstDay, equityCurve, todayTrades: todayTrades.length, todayPnl, streak, streakType: sType };
   }, [trades]);
 
   if (!stats) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
-        <BarChart3 className="w-16 h-16 text-muted-foreground/30" />
-        <h2 className="text-xl font-semibold text-muted-foreground">No trades yet</h2>
-        <p className="text-sm text-muted-foreground">Add your first trade to see your dashboard come alive.</p>
+        <div className="w-16 h-16 rounded-2xl bg-muted flex items-center justify-center">
+          <BarChart3 className="w-8 h-8 text-muted-foreground/40" />
+        </div>
+        <h2 className="text-lg font-semibold text-muted-foreground">No trades yet</h2>
+        <p className="text-sm text-muted-foreground/60">Add your first trade or sync from a broker to get started.</p>
       </div>
     );
   }
@@ -93,12 +81,16 @@ export default function Dashboard() {
 
   return (
     <div className="space-y-6">
+      {/* Header */}
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Dashboard</h1>
+        <div>
+          <h1 className="text-xl font-semibold">Dashboard</h1>
+          <p className="text-sm text-muted-foreground mt-0.5">Welcome back, {settings.profileName}</p>
+        </div>
         {stats.streak > 0 && (
-          <div className="flex items-center gap-2 glass-card px-4 py-2 rounded-full">
-            {stats.streakType === 'win' && <Flame className="w-5 h-5 text-warning" />}
-            <span className={`font-bold ${stats.streakType === 'win' ? 'text-success' : 'text-destructive'}`}>
+          <div className="flex items-center gap-2 bg-card border border-border px-4 py-2 rounded-full">
+            {stats.streakType === 'win' && <Flame className="w-4 h-4 text-warning" />}
+            <span className={`text-sm font-semibold ${stats.streakType === 'win' ? 'text-success' : 'text-destructive'}`}>
               {stats.streak} {stats.streakType === 'win' ? 'Win' : 'Loss'} Streak {stats.streakType === 'win' ? '🔥' : ''}
             </span>
           </div>
@@ -106,16 +98,16 @@ export default function Dashboard() {
       </div>
 
       {/* Today Summary */}
-      <div className="glass-card rounded-xl p-4 flex items-center gap-6 gold-gradient/10 border-primary/20">
+      <div className="bg-card border border-border rounded-xl p-4 flex items-center justify-between">
         <div>
-          <p className="text-xs text-muted-foreground uppercase tracking-wider">Today's Summary</p>
-          <p className="text-lg font-bold font-mono">
+          <p className="text-[11px] text-muted-foreground uppercase tracking-widest font-medium">Today</p>
+          <p className="text-xl font-semibold font-mono mt-1">
             <span className={stats.todayPnl >= 0 ? 'text-success' : 'text-destructive'}>
               {stats.todayPnl >= 0 ? '+' : ''}{stats.todayPnl.toFixed(2)} {cur}
             </span>
           </p>
         </div>
-        <div className="text-sm text-muted-foreground">{stats.todayTrades} trades today</div>
+        <span className="text-sm text-muted-foreground">{stats.todayTrades} trade{stats.todayTrades !== 1 ? 's' : ''}</span>
       </div>
 
       {/* KPI Grid */}
@@ -136,22 +128,28 @@ export default function Dashboard() {
       </div>
 
       {/* Equity Curve */}
-      <div className="glass-card rounded-xl p-6">
-        <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-4">Equity Curve</h3>
-        <ResponsiveContainer width="100%" height={300}>
-          <LineChart data={stats.equityCurve}>
+      <div className="bg-card border border-border rounded-xl p-6">
+        <h3 className="text-[11px] font-medium text-muted-foreground uppercase tracking-widest mb-4">Equity Curve</h3>
+        <ResponsiveContainer width="100%" height={280}>
+          <AreaChart data={stats.equityCurve}>
+            <defs>
+              <linearGradient id="eqGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="hsl(43, 74%, 49%)" stopOpacity={0.2} />
+                <stop offset="100%" stopColor="hsl(43, 74%, 49%)" stopOpacity={0} />
+              </linearGradient>
+            </defs>
             <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
             <XAxis dataKey="date" tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }} />
             <YAxis tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }} />
             <Tooltip contentStyle={{ background: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: 8, fontSize: 12 }} />
-            <Line type="monotone" dataKey="equity" stroke="hsl(43, 74%, 49%)" strokeWidth={2} dot={false} />
-          </LineChart>
+            <Area type="monotone" dataKey="equity" stroke="hsl(43, 74%, 49%)" strokeWidth={2} fill="url(#eqGrad)" />
+          </AreaChart>
         </ResponsiveContainer>
       </div>
 
       {/* Market Sessions */}
-      <div className="glass-card rounded-xl p-6">
-        <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-4">Market Sessions</h3>
+      <div className="bg-card border border-border rounded-xl p-6">
+        <h3 className="text-[11px] font-medium text-muted-foreground uppercase tracking-widest mb-4">Market Sessions</h3>
         <MarketSessionsClock />
       </div>
     </div>
@@ -161,15 +159,11 @@ export default function Dashboard() {
 function MarketSessionsClock() {
   const now = new Date();
   const utcH = now.getUTCHours();
-  const utcM = now.getUTCMinutes();
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
       {MARKET_SESSIONS.map(s => {
-        const isOpen = s.open < s.close
-          ? utcH >= s.open && utcH < s.close
-          : utcH >= s.open || utcH < s.close;
-
+        const isOpen = s.open < s.close ? utcH >= s.open && utcH < s.close : utcH >= s.open || utcH < s.close;
         let nextEvent: string;
         let hoursTo: number;
         if (isOpen) {
@@ -181,15 +175,13 @@ function MarketSessionsClock() {
         }
 
         return (
-          <div key={s.name} className={`rounded-xl p-4 border ${isOpen ? 'border-success/30 bg-success/5' : 'border-border bg-card'}`}>
-            <div className="flex items-center gap-2 mb-2">
-              <div className={`w-2 h-2 rounded-full ${isOpen ? 'bg-success animate-pulse' : 'bg-muted-foreground/30'}`} />
-              <span className="font-semibold text-sm">{s.name}</span>
+          <div key={s.name} className={`rounded-xl p-4 border transition-colors ${isOpen ? 'border-success/20 bg-success/5' : 'border-border bg-card'}`}>
+            <div className="flex items-center gap-2 mb-1.5">
+              <div className={`w-2 h-2 rounded-full ${isOpen ? 'bg-success' : 'bg-muted-foreground/20'}`} />
+              <span className="font-medium text-sm">{s.name}</span>
             </div>
-            <p className={`text-xs ${isOpen ? 'text-success' : 'text-muted-foreground'}`}>
-              {isOpen ? 'OPEN' : 'CLOSED'}
-            </p>
-            <p className="text-[10px] text-muted-foreground mt-1">{nextEvent}</p>
+            <p className={`text-xs font-medium ${isOpen ? 'text-success' : 'text-muted-foreground'}`}>{isOpen ? 'OPEN' : 'CLOSED'}</p>
+            <p className="text-[10px] text-muted-foreground mt-0.5">{nextEvent}</p>
           </div>
         );
       })}
