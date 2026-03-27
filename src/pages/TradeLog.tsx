@@ -63,37 +63,39 @@ export default function TradeLog() {
   };
 
   const SortBtn = ({ k, label }: { k: SortKey; label: string }) => (
-    <button onClick={() => toggleSort(k)} className="flex items-center gap-1 hover:text-primary transition-colors">
-      {label} <ArrowUpDown size={10} className={sortKey === k ? 'text-primary' : 'text-muted-foreground/50'} />
+    <button onClick={() => toggleSort(k)} className="flex items-center gap-1 hover:text-foreground transition-colors">
+      {label} <ArrowUpDown size={10} className={sortKey === k ? 'text-primary' : 'opacity-30'} />
     </button>
   );
 
+  const selectCls = "px-3 py-1.5 rounded-lg bg-muted border border-border text-xs focus:outline-none focus:ring-1 focus:ring-primary";
+
   return (
-    <div className="space-y-4">
+    <div className="space-y-5">
       <div className="flex items-center justify-between flex-wrap gap-3">
-        <h1 className="text-2xl font-bold">Trade Log</h1>
+        <h1 className="text-xl font-semibold">Trade Log</h1>
         <div className="flex items-center gap-2">
           <div className="relative">
-            <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-            <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search..." className="pl-8 pr-3 py-2 rounded-lg bg-card border border-border text-sm focus:outline-none focus:ring-1 focus:ring-primary w-48" />
+            <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+            <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search..." className="pl-8 pr-3 py-1.5 rounded-lg bg-muted border border-border text-xs focus:outline-none focus:ring-1 focus:ring-primary w-44" />
           </div>
-          <button onClick={() => setShowFilters(!showFilters)} className="p-2 rounded-lg bg-card border border-border hover:border-primary transition-colors"><Filter size={14} /></button>
-          <button onClick={exportCSV} className="p-2 rounded-lg bg-card border border-border hover:border-primary transition-colors"><Download size={14} /></button>
-          {selected.size > 0 && <button onClick={handleBulkDelete} className="p-2 rounded-lg bg-destructive/10 border border-destructive/30 text-destructive hover:bg-destructive/20 transition-colors"><Trash2 size={14} /></button>}
+          <button onClick={() => setShowFilters(!showFilters)} className={`p-1.5 rounded-lg border transition-colors ${showFilters ? 'border-primary bg-primary/5 text-primary' : 'border-border hover:border-primary/30'}`}><Filter size={14} /></button>
+          <button onClick={exportCSV} className="p-1.5 rounded-lg border border-border hover:border-primary/30 transition-colors"><Download size={14} /></button>
+          {selected.size > 0 && <button onClick={handleBulkDelete} className="p-1.5 rounded-lg bg-destructive/10 border border-destructive/20 text-destructive"><Trash2 size={14} /></button>}
         </div>
       </div>
 
       {showFilters && (
-        <div className="glass-card rounded-xl p-4 flex flex-wrap gap-3">
-          <select value={filterPair} onChange={e => setFilterPair(e.target.value)} className="px-3 py-1.5 rounded-lg bg-background border border-border text-sm">
+        <div className="flex flex-wrap gap-2">
+          <select value={filterPair} onChange={e => setFilterPair(e.target.value)} className={selectCls}>
             <option value="">All Pairs</option>
             {pairs.map(p => <option key={p} value={p}>{p}</option>)}
           </select>
-          <select value={filterStrategy} onChange={e => setFilterStrategy(e.target.value)} className="px-3 py-1.5 rounded-lg bg-background border border-border text-sm">
+          <select value={filterStrategy} onChange={e => setFilterStrategy(e.target.value)} className={selectCls}>
             <option value="">All Strategies</option>
             {strategies.map(s => <option key={s} value={s}>{s}</option>)}
           </select>
-          <select value={filterResult} onChange={e => setFilterResult(e.target.value)} className="px-3 py-1.5 rounded-lg bg-background border border-border text-sm">
+          <select value={filterResult} onChange={e => setFilterResult(e.target.value)} className={selectCls}>
             <option value="">All Results</option>
             <option value="Win">Win</option>
             <option value="Loss">Loss</option>
@@ -102,11 +104,11 @@ export default function TradeLog() {
         </div>
       )}
 
-      <div className="glass-card rounded-xl overflow-hidden">
+      <div className="bg-card border border-border rounded-xl overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-xs">
             <thead>
-              <tr className="border-b border-border bg-muted/30">
+              <tr className="border-b border-border text-[11px] text-muted-foreground">
                 <th className="p-3 text-left"><input type="checkbox" onChange={e => setSelected(e.target.checked ? new Set(filtered.map(t => t.id)) : new Set())} checked={selected.size === filtered.length && filtered.length > 0} className="accent-primary" /></th>
                 <th className="p-3 text-left"><SortBtn k="date" label="Date" /></th>
                 <th className="p-3 text-left"><SortBtn k="pair" label="Pair" /></th>
@@ -126,17 +128,17 @@ export default function TradeLog() {
             </thead>
             <tbody>
               {filtered.map(t => (
-                <tr key={t.id} className="border-b border-border/50 hover:bg-muted/20 transition-colors">
+                <tr key={t.id} className="border-b border-border/60 hover:bg-muted/30 transition-colors">
                   <td className="p-3"><input type="checkbox" checked={selected.has(t.id)} onChange={e => { const s = new Set(selected); e.target.checked ? s.add(t.id) : s.delete(t.id); setSelected(s); }} className="accent-primary" /></td>
                   <td className="p-3 font-mono text-muted-foreground">{format(new Date(t.date), 'MM/dd HH:mm')}</td>
-                  <td className="p-3 font-semibold">{t.pair}</td>
-                  <td className="p-3"><span className={`px-1.5 py-0.5 rounded text-[10px] font-bold ${t.direction === 'Long' ? 'bg-success/10 text-success' : 'bg-destructive/10 text-destructive'}`}>{t.direction === 'Long' ? 'BUY' : 'SELL'}</span></td>
+                  <td className="p-3 font-medium">{t.pair}</td>
+                  <td className="p-3"><span className={`px-1.5 py-0.5 rounded text-[10px] font-medium ${t.direction === 'Long' ? 'bg-success/10 text-success' : 'bg-destructive/10 text-destructive'}`}>{t.direction === 'Long' ? 'BUY' : 'SELL'}</span></td>
                   <td className="p-3 text-right font-mono">{t.entry}</td>
-                  <td className="p-3 text-right font-mono text-destructive/70">{t.sl}</td>
-                  <td className="p-3 text-right font-mono text-success/70">{t.tp}</td>
+                  <td className="p-3 text-right font-mono text-destructive/60">{t.sl}</td>
+                  <td className="p-3 text-right font-mono text-success/60">{t.tp}</td>
                   <td className="p-3 text-right font-mono">{t.lotSize}</td>
-                  <td className="p-3"><span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${t.result === 'Win' ? 'bg-success/10 text-success' : t.result === 'Loss' ? 'bg-destructive/10 text-destructive' : 'bg-muted text-muted-foreground'}`}>{t.result}</span></td>
-                  <td className={`p-3 text-right font-mono font-bold ${t.pnl >= 0 ? 'text-success' : 'text-destructive'}`}>{t.pnl >= 0 ? '+' : ''}{t.pnl.toFixed(2)}</td>
+                  <td className="p-3"><span className={`px-2 py-0.5 rounded-full text-[10px] font-medium ${t.result === 'Win' ? 'bg-success/10 text-success' : t.result === 'Loss' ? 'bg-destructive/10 text-destructive' : 'bg-muted text-muted-foreground'}`}>{t.result}</span></td>
+                  <td className={`p-3 text-right font-mono font-semibold ${t.pnl >= 0 ? 'text-success' : 'text-destructive'}`}>{t.pnl >= 0 ? '+' : ''}{t.pnl.toFixed(2)}</td>
                   <td className="p-3 text-right font-mono">{t.rr.toFixed(2)}</td>
                   <td className="p-3 text-right font-mono text-muted-foreground">-{t.commission.toFixed(2)}</td>
                   <td className="p-3"><span className="px-2 py-0.5 rounded-full bg-primary/10 text-primary text-[10px] font-medium">{t.strategy}</span></td>
@@ -146,10 +148,10 @@ export default function TradeLog() {
               ))}
             </tbody>
           </table>
-          {filtered.length === 0 && <div className="text-center py-12 text-muted-foreground text-sm">No trades found</div>}
+          {filtered.length === 0 && <div className="text-center py-16 text-muted-foreground text-sm">No trades found</div>}
         </div>
       </div>
-      <p className="text-xs text-muted-foreground">{filtered.length} trades</p>
+      <p className="text-[11px] text-muted-foreground">{filtered.length} trades</p>
     </div>
   );
 }

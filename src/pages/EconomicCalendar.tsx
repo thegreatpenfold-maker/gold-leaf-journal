@@ -36,17 +36,18 @@ export default function EconomicCalendar() {
     return r;
   }, [filterCurrency, filterImpact]);
 
-  const impactColor = (i: string) => i === 'High' ? 'bg-destructive/20 text-destructive' : i === 'Medium' ? 'bg-warning/20 text-warning' : 'bg-muted text-muted-foreground';
+  const impactColor = (i: string) => i === 'High' ? 'bg-destructive/10 text-destructive' : i === 'Medium' ? 'bg-warning/10 text-warning' : 'bg-muted text-muted-foreground';
+  const selectCls = "px-3 py-1.5 rounded-lg bg-muted border border-border text-xs focus:outline-none focus:ring-1 focus:ring-primary";
 
   return (
-    <div className="space-y-6">
-      <h1 className="text-2xl font-bold">Economic Calendar</h1>
-      <div className="flex gap-3">
-        <select value={filterCurrency} onChange={e => setFilterCurrency(e.target.value)} className="px-3 py-2 rounded-lg bg-card border border-border text-sm">
+    <div className="space-y-5">
+      <h1 className="text-xl font-semibold">Economic Calendar</h1>
+      <div className="flex gap-2">
+        <select value={filterCurrency} onChange={e => setFilterCurrency(e.target.value)} className={selectCls}>
           <option value="">All Currencies</option>
           {currencies.map(c => <option key={c} value={c}>{c}</option>)}
         </select>
-        <select value={filterImpact} onChange={e => setFilterImpact(e.target.value)} className="px-3 py-2 rounded-lg bg-card border border-border text-sm">
+        <select value={filterImpact} onChange={e => setFilterImpact(e.target.value)} className={selectCls}>
           <option value="">All Impact</option>
           <option value="High">High</option>
           <option value="Medium">Medium</option>
@@ -54,20 +55,20 @@ export default function EconomicCalendar() {
         </select>
       </div>
 
-      <div className="glass-card rounded-xl overflow-hidden">
-        <table className="w-full text-sm">
-          <thead><tr className="border-b border-border bg-muted/30 text-xs text-muted-foreground">
-            <th className="p-3 text-left">Date</th><th className="p-3 text-left">Time</th><th className="p-3 text-left">Currency</th>
-            <th className="p-3 text-left">Event</th><th className="p-3 text-center">Impact</th><th className="p-3 text-right">Forecast</th><th className="p-3 text-right">Previous</th>
+      <div className="bg-card border border-border rounded-xl overflow-hidden">
+        <table className="w-full text-xs">
+          <thead><tr className="border-b border-border text-[11px] text-muted-foreground">
+            <th className="p-3 text-left font-medium">Date</th><th className="p-3 text-left font-medium">Time</th><th className="p-3 text-left font-medium">Currency</th>
+            <th className="p-3 text-left font-medium">Event</th><th className="p-3 text-center font-medium">Impact</th><th className="p-3 text-right font-medium">Forecast</th><th className="p-3 text-right font-medium">Previous</th>
           </tr></thead>
           <tbody>
             {filtered.map((e, i) => (
-              <tr key={i} className="border-b border-border/50 hover:bg-muted/20 transition-colors">
+              <tr key={i} className="border-b border-border/60 hover:bg-muted/30 transition-colors">
                 <td className="p-3 font-mono text-muted-foreground">{e.date}</td>
                 <td className="p-3 font-mono">{e.time}</td>
-                <td className="p-3 font-bold">{e.currency}</td>
+                <td className="p-3 font-semibold">{e.currency}</td>
                 <td className="p-3">{e.event}</td>
-                <td className="p-3 text-center"><span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${impactColor(e.impact)}`}>{e.impact}</span></td>
+                <td className="p-3 text-center"><span className={`px-2 py-0.5 rounded-full text-[10px] font-medium ${impactColor(e.impact)}`}>{e.impact}</span></td>
                 <td className="p-3 text-right font-mono">{e.forecast}</td>
                 <td className="p-3 text-right font-mono text-muted-foreground">{e.previous}</td>
               </tr>
