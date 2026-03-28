@@ -4,9 +4,10 @@ import { motion } from 'framer-motion';
 import {
   LayoutDashboard, ClipboardList, PlusCircle, BarChart3, CalendarDays,
   BookOpen, Library, Calculator, Newspaper, Link2, Settings, ChevronLeft,
-  ChevronRight, Flame, TrendingUp,
+  ChevronRight, Flame, TrendingUp, LogOut,
 } from 'lucide-react';
 import { useApp } from '@/context/AppContext';
+import { useAuth } from '@/hooks/useAuth';
 import { MARKET_SESSIONS } from '@/lib/types';
 
 const navItems = [
