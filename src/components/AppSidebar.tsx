@@ -4,9 +4,10 @@ import { motion } from 'framer-motion';
 import {
   LayoutDashboard, ClipboardList, PlusCircle, BarChart3, CalendarDays,
   BookOpen, Library, Calculator, Newspaper, Link2, Settings, ChevronLeft,
-  ChevronRight, Flame, TrendingUp,
+  ChevronRight, Flame, TrendingUp, LogOut,
 } from 'lucide-react';
 import { useApp } from '@/context/AppContext';
+import { useAuth } from '@/hooks/useAuth';
 import { MARKET_SESSIONS } from '@/lib/types';
 
 const navItems = [
@@ -51,6 +52,7 @@ function SessionClock({ collapsed }: { collapsed: boolean }) {
 export default function AppSidebar() {
   const [collapsed, setCollapsed] = useState(false);
   const { trades } = useApp();
+  const { signOut } = useAuth();
 
   const sortedTrades = [...trades].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
   let streak = 0;
@@ -127,8 +129,16 @@ export default function AppSidebar() {
         ))}
       </nav>
 
-      {/* Session Clock */}
+      {/* Sign Out & Session Clock */}
       <div className="border-t border-sidebar-border">
+        <button
+          onClick={() => signOut()}
+          className={`flex items-center gap-2.5 px-3 py-2.5 mx-2 my-1 rounded-lg text-[13px] text-sidebar-foreground hover:bg-destructive/10 hover:text-destructive transition-colors w-[calc(100%-16px)] ${collapsed ? 'justify-center px-2' : ''}`}
+          title={collapsed ? 'Sign Out' : undefined}
+        >
+          <LogOut size={16} className="flex-shrink-0" />
+          {!collapsed && <span>Sign Out</span>}
+        </button>
         <SessionClock collapsed={collapsed} />
       </div>
     </motion.aside>

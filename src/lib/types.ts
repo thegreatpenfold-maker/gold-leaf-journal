@@ -48,6 +48,7 @@ export interface ConnectedAccount {
   accountId: string;
   apiKey: string;
   secret: string;
+  server: string;
   status: 'connected' | 'disconnected';
   balance: number;
   equity: number;
