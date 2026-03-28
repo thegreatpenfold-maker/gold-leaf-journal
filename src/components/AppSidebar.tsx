@@ -52,6 +52,7 @@ function SessionClock({ collapsed }: { collapsed: boolean }) {
 export default function AppSidebar() {
   const [collapsed, setCollapsed] = useState(false);
   const { trades } = useApp();
+  const { signOut } = useAuth();
 
   const sortedTrades = [...trades].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
   let streak = 0;
