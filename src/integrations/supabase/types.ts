@@ -14,7 +14,264 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      connected_accounts: {
+        Row: {
+          account_id: string
+          balance: number | null
+          broker: string
+          created_at: string
+          daily_pnl: number | null
+          equity: number | null
+          id: string
+          last_sync: string | null
+          open_trades: number | null
+          server: string | null
+          status: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          account_id: string
+          balance?: number | null
+          broker: string
+          created_at?: string
+          daily_pnl?: number | null
+          equity?: number | null
+          id?: string
+          last_sync?: string | null
+          open_trades?: number | null
+          server?: string | null
+          status?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          account_id?: string
+          balance?: number | null
+          broker?: string
+          created_at?: string
+          daily_pnl?: number | null
+          equity?: number | null
+          id?: string
+          last_sync?: string | null
+          open_trades?: number | null
+          server?: string | null
+          status?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      journal_entries: {
+        Row: {
+          created_at: string
+          date: string
+          id: string
+          lessons: string | null
+          mindset: number | null
+          mistakes: string | null
+          notes: string | null
+          pre_market: string | null
+          review: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          date: string
+          id?: string
+          lessons?: string | null
+          mindset?: number | null
+          mistakes?: string | null
+          notes?: string | null
+          pre_market?: string | null
+          review?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          date?: string
+          id?: string
+          lessons?: string | null
+          mindset?: number | null
+          mistakes?: string | null
+          notes?: string | null
+          pre_market?: string | null
+          review?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      playbooks: {
+        Row: {
+          conditions: string | null
+          created_at: string
+          description: string | null
+          id: string
+          name: string
+          rules: string[] | null
+          screenshot: string | null
+          strategy_tag: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          conditions?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          name: string
+          rules?: string[] | null
+          screenshot?: string | null
+          strategy_tag?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          conditions?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          name?: string
+          rules?: string[] | null
+          screenshot?: string | null
+          strategy_tag?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          accent_color: string | null
+          avatar_url: string | null
+          created_at: string
+          currency: string | null
+          dark_mode: boolean | null
+          default_lot_size: number | null
+          default_risk_percent: number | null
+          display_name: string | null
+          id: string
+          notifications: boolean | null
+          preferred_sessions: string[] | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          accent_color?: string | null
+          avatar_url?: string | null
+          created_at?: string
+          currency?: string | null
+          dark_mode?: boolean | null
+          default_lot_size?: number | null
+          default_risk_percent?: number | null
+          display_name?: string | null
+          id?: string
+          notifications?: boolean | null
+          preferred_sessions?: string[] | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          accent_color?: string | null
+          avatar_url?: string | null
+          created_at?: string
+          currency?: string | null
+          dark_mode?: boolean | null
+          default_lot_size?: number | null
+          default_risk_percent?: number | null
+          display_name?: string | null
+          id?: string
+          notifications?: boolean | null
+          preferred_sessions?: string[] | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      trades: {
+        Row: {
+          broker_account_id: string | null
+          close_date: string | null
+          commission: number
+          confidence: number | null
+          created_at: string
+          date: string
+          direction: string
+          duration: string | null
+          emotion: number | null
+          entry: number
+          id: string
+          lot_size: number
+          mistakes: string[] | null
+          notes: string | null
+          pair: string
+          pnl: number
+          result: string
+          rr: number
+          screenshot: string | null
+          sl: number
+          strategy: string | null
+          tp: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          broker_account_id?: string | null
+          close_date?: string | null
+          commission?: number
+          confidence?: number | null
+          created_at?: string
+          date: string
+          direction: string
+          duration?: string | null
+          emotion?: number | null
+          entry: number
+          id?: string
+          lot_size: number
+          mistakes?: string[] | null
+          notes?: string | null
+          pair: string
+          pnl?: number
+          result: string
+          rr?: number
+          screenshot?: string | null
+          sl: number
+          strategy?: string | null
+          tp: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          broker_account_id?: string | null
+          close_date?: string | null
+          commission?: number
+          confidence?: number | null
+          created_at?: string
+          date?: string
+          direction?: string
+          duration?: string | null
+          emotion?: number | null
+          entry?: number
+          id?: string
+          lot_size?: number
+          mistakes?: string[] | null
+          notes?: string | null
+          pair?: string
+          pnl?: number
+          result?: string
+          rr?: number
+          screenshot?: string | null
+          sl?: number
+          strategy?: string | null
+          tp?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
